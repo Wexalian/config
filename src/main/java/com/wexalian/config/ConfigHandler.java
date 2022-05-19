@@ -20,8 +20,9 @@ public class ConfigHandler {
     private final Map<String, TypeToken<?>> typeTokens = new HashMap<>();
     
     private final String name;
-    private Gson gson;
+    private String currentCategory = null;
     
+    private Gson gson;
     private Path filePath;
     private boolean forceDirty;
     
@@ -38,6 +39,9 @@ public class ConfigHandler {
     @Nonnull
     public <T> ConfigProperty<T> createProperty(@Nonnull String name, @Nullable Supplier<T> defaultSupplier, @Nonnull TypeToken<T> token) {
         ConfigProperty<T> property = new ConfigProperty<>(defaultSupplier);
+        if (currentCategory != null && !currentCategory.isBlank()) {
+            name = currentCategory + "#" + name;
+        }
         properties.put(name, property);
         typeTokens.put(name, token);
         return property;
@@ -94,6 +98,14 @@ public class ConfigHandler {
         properties.put(name, property);
         typeTokens.put(name, token);
         return property;
+    }
+    
+    public void setCategory(@Nonnull String category) {
+        this.currentCategory = category;
+    }
+    
+    public void resetCategory() {
+        this.currentCategory = null;
     }
     
     public void load(@Nonnull Path path) throws IOException {
@@ -156,19 +168,25 @@ public class ConfigHandler {
                     
                     if (token != null) {
                         JsonObject toAddTo = json;
+                        String category = "";
                         
-                        if (key.indexOf('#') > 0) {
-                            String[] split = key.split("#");
-                            key = split[1];
-                            String category = split[0];
+                        while (key.indexOf('#') > 0) {
+                            List<String> split = new ArrayList<>(List.of(key.split("#")));
+                            String newCategory = split.remove(0);
+                            category = (category == null || category.isBlank()) ? newCategory : category + "#" + newCategory;
+                            key = String.join("#", split);
+                            
                             if (category != null && !category.isBlank()) {
+                                JsonObject finalToAddTo = toAddTo;
                                 toAddTo = categories.computeIfAbsent(category, s -> {
                                     JsonObject object = new JsonObject();
-                                    json.add(category, object);
+                                    finalToAddTo.add(newCategory, object);
                                     return object;
                                 });
                             }
                         }
+                        
+                        
                         JsonElement element = gson.toJsonTree(value, token.getType());
                         
                         toAddTo.add(key, element);
@@ -184,6 +202,12 @@ public class ConfigHandler {
     
     public void setSerializeNulls() {
         this.gson = gson.newBuilder().serializeNulls().create();
+    }
+    
+    public void debug() {
+        for (var entry : properties.entrySet()) {
+            System.out.println("'" + entry.getKey() + "': " + entry.getValue().get());
+        }
     }
     
     public static ConfigHandler create(String name) {
