@@ -23,17 +23,18 @@ public class TestConfig {
         var testInt2 = config.createIntegerProperty("category1#int3", 0);
         var testInt5 = config.createIntegerProperty("category2#int4", 0);
         
-        config.setCategory("test1");
+        config.pushCategory("test1");
         
         var testInt4 = config.createIntegerProperty("category2#int5", 0);
         var testInt6 = config.createIntegerProperty("int6", 0);
         var testString1 = config.createProperty("string1", null, new TypeToken<>() {});
         
-        config.setCategory("test2");
+        config.popCategory();
+        config.pushCategory("test2");
         
         var testString2 = config.createStringProperty("level1#level2#level3#string2", "");
         
-        config.resetCategory();
+        config.popCategory();
         
         var testDouble1 = config.createDoubleProperty("double1", 0);
         

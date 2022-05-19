@@ -20,7 +20,7 @@ public class ConfigHandler {
     private final Map<String, TypeToken<?>> typeTokens = new HashMap<>();
     
     private final String name;
-    private String currentCategory = null;
+    private LinkedList<String> pushedCategories = new LinkedList<>();
     
     private Gson gson;
     private Path filePath;
@@ -39,8 +39,8 @@ public class ConfigHandler {
     @Nonnull
     public <T> ConfigProperty<T> createProperty(@Nonnull String name, @Nullable Supplier<T> defaultSupplier, @Nonnull TypeToken<T> token) {
         ConfigProperty<T> property = new ConfigProperty<>(defaultSupplier);
-        if (currentCategory != null && !currentCategory.isBlank()) {
-            name = currentCategory + "#" + name;
+        if (!pushedCategories.isEmpty()) {
+            name = String.join("#", pushedCategories) + "#" + name;
         }
         properties.put(name, property);
         typeTokens.put(name, token);
@@ -100,16 +100,16 @@ public class ConfigHandler {
         return property;
     }
     
-    public void setCategory(@Nonnull String category) {
-        this.currentCategory = category;
+    public void pushCategory(@Nonnull String category) {
+        pushedCategories.add(category);
     }
     
-    public void resetCategory() {
-        this.currentCategory = null;
+    public void popCategory() {
+        pushedCategories.remove(pushedCategories.size() - 1);
     }
     
     public void load(@Nonnull Path path) throws IOException {
-        this.filePath = path;
+        filePath = path;
         
         if (Files.exists(path)) {
             String content = Files.readString(path);
@@ -204,9 +204,13 @@ public class ConfigHandler {
         this.gson = gson.newBuilder().serializeNulls().create();
     }
     
+    public void setForceDirty(boolean forceDirty) {
+        this.forceDirty = forceDirty;
+    }
+    
     public void debug() {
         for (var entry : properties.entrySet()) {
-            System.out.println("'" + entry.getKey() + "': " + entry.getValue().get());
+            LOGGER.fine("'" + entry.getKey() + "': " + entry.getValue().get());
         }
     }
     
