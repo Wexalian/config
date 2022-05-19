@@ -1,0 +1,98 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'java-library'
+    id 'maven'
+    id 'signing'
+    id 'org.javamodularity.moduleplugin' version '1.6.0'
+    id 'io.codearte.nexus-staging' version '0.21.2'
+}
+
+targetCompatibility = sourceCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 11
+
+group = 'com.wexalian.config'
+version = '0.0.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.wexalian.nullability:nullability:0.0.2'
+
+    api 'com.google.code.gson:gson:2.8.9'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: deployRepoUrl) {
+                authentication(userName: deployRepoUsername, password: deployRepoPassword)
+            }
+
+            snapshotRepository(url: deployRepoUrlSnapshot) {
+                authentication(userName: deployRepoUsername, password: deployRepoPassword)
+            }
+
+            pom.project {
+                name = 'config'
+                packaging = 'jar'
+                description = 'A basic config system based on GSON'
+                url = 'https://www.github.com/Wexalian/config'
+
+                licenses {
+                    license {
+                        name = 'The Unlicense'
+                        url = 'https://unlicense.org/'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'Wexalian'
+                        name = 'Lars Gerrits'
+                        email = 'larsgerrits99@gmail.com'
+//                        organization = 'wexalian'
+//                        organizationUrl = 'http://www.wexalian.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Wexalian/config.git'
+                    developerConnection = 'scm:git:ssh://github.com/Wexalian/config.git'
+                    url = 'https://www.github.com/Wexalian/config'
+                }
+            }
+        }
+    }
+}
