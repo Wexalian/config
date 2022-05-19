@@ -18,21 +18,24 @@ public class TestConfig {
         ConfigHandler config = ConfigHandler.create("test-config");
         // config.setSerializeNulls();
         
-        ConfigProperty<Integer> testInt3 = config.createIntegerProperty("category1#c", 0);
-        ConfigProperty<Integer> testInt1 = config.createIntegerProperty("category1#a", 0);
-        ConfigProperty<Integer> testInt2 = config.createIntegerProperty("category1#b", 0);
-        ConfigProperty<Integer> testInt5 = config.createIntegerProperty("category2#e", 0);
+        var testInt3 = config.createIntegerProperty("category1#int1", 0);
+        var testInt1 = config.createIntegerProperty("category1#int2", 0);
+        var testInt2 = config.createIntegerProperty("category1#int3", 0);
+        var testInt5 = config.createIntegerProperty("category2#int4", 0);
         
-        config.setCategory("category_test");
+        config.setCategory("test1");
         
-        ConfigProperty<Integer> testInt4 = config.createIntegerProperty("category2#d", 0);
-        ConfigProperty<Integer> testInt6 = config.createIntegerProperty("category2#f", 0);
+        var testInt4 = config.createIntegerProperty("category2#int5", 0);
+        var testInt6 = config.createIntegerProperty("int6", 0);
+        var testString1 = config.createProperty("string1", null, new TypeToken<>() {});
         
-        ConfigProperty<String> testString = config.createProperty("strings#string1", null, new TypeToken<>() {});
+        config.setCategory("test2");
         
-        ConfigProperty<Double> testDouble = config.createDoubleProperty("double", 0);
+        var testString2 = config.createStringProperty("level1#level2#level3#string2", "");
         
         config.resetCategory();
+        
+        var testDouble1 = config.createDoubleProperty("double1", 0);
         
         config.load(PATH);
         
@@ -45,9 +48,10 @@ public class TestConfig {
         testInt5.set(RANDOM.nextInt(10));
         testInt6.set(RANDOM.nextInt(10));
         
-        testString.set("test" + RANDOM.nextInt(10));
+        testString2.set("test" + RANDOM.nextInt(10));
+        testString1.set("test" + RANDOM.nextInt(10));
         
-        testDouble.set(RANDOM.nextDouble() * 10);
+        testDouble1.set(RANDOM.nextDouble() * 10);
         
         config.save();
     }

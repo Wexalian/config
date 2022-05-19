@@ -2,6 +2,7 @@ package com.wexalian.config;
 
 import com.wexalian.nullability.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class ConfigProperty<T> extends BaseConfigProperty<T> {
@@ -25,7 +26,9 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
     }
     
     public void set(T value) {
-        this.value = value;
-        this.dirty = true;
+        if (!Objects.equals(this.value, value)) {
+            this.value = value;
+            this.dirty = true;
+        }
     }
 }
