@@ -4,23 +4,24 @@ import com.wexalian.nullability.annotations.Nonnull;
 import com.wexalian.nullability.annotations.Nullable;
 import com.wexalian.nullability.function.NonnullSupplier;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class ListConfigProperty<T> extends BaseConfigProperty<List<T>> {
     private final NonnullSupplier<List<T>> defaultSupplier;
+    private final Supplier<Collection<T>> defaultValuesSupplier;
     private List<T> values;
     
-    ListConfigProperty(@Nonnull NonnullSupplier<List<T>> defaultSupplier) {
+    ListConfigProperty(@Nonnull NonnullSupplier<List<T>> defaultSupplier, @Nullable Supplier<Collection<T>> defaultValuesSupplier) {
         this.defaultSupplier = defaultSupplier;
+        this.defaultValuesSupplier = defaultValuesSupplier;
     }
     
     @Nonnull
     @Override
     public List<T> get() {
-        if (values == null) {
-            set(defaultSupplier.get());
-        }
-        if (values == null) {
+        if (getOrDefault() == null) {
             return List.of();
         }
         return List.copyOf(values);
@@ -46,6 +47,9 @@ public class ListConfigProperty<T> extends BaseConfigProperty<List<T>> {
     private List<T> getOrDefault() {
         if (values == null) {
             set(defaultSupplier.get());
+            if (values != null && defaultValuesSupplier != null) {
+                values.addAll(defaultValuesSupplier.get());
+            }
         }
         return values;
     }

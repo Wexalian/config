@@ -20,7 +20,7 @@ public class ConfigHandler {
     private final Map<String, TypeToken<?>> typeTokens = new HashMap<>();
     
     private final String name;
-    private LinkedList<String> pushedCategories = new LinkedList<>();
+    private final LinkedList<String> pushedCategories = new LinkedList<>();
     
     private Gson gson;
     private Path filePath;
@@ -94,7 +94,15 @@ public class ConfigHandler {
     
     @Nonnull
     public <T> ListConfigProperty<T> createListProperty(@Nonnull String name, @Nonnull TypeToken<List<T>> token) {
-        ListConfigProperty<T> property = new ListConfigProperty<>(ArrayList::new);
+        return createListProperty(name, null, token);
+    }
+    
+    @Nonnull
+    public <T> ListConfigProperty<T> createListProperty(@Nonnull String name, @Nullable Supplier<Collection<T>> defaultValuesSupplier, @Nonnull TypeToken<List<T>> token) {
+        ListConfigProperty<T> property = new ListConfigProperty<>(ArrayList::new, defaultValuesSupplier);
+        if (!pushedCategories.isEmpty()) {
+            name = String.join("#", pushedCategories) + "#" + name;
+        }
         properties.put(name, property);
         typeTokens.put(name, token);
         return property;
@@ -105,7 +113,10 @@ public class ConfigHandler {
     }
     
     public void popCategory() {
-        pushedCategories.remove(pushedCategories.size() - 1);
+        int size = pushedCategories.size();
+        if (size > 0) {
+            pushedCategories.remove(size - 1);
+        }
     }
     
     public void load(@Nonnull Path path) throws IOException {
@@ -185,7 +196,6 @@ public class ConfigHandler {
                                 });
                             }
                         }
-                        
                         
                         JsonElement element = gson.toJsonTree(value, token.getType());
                         

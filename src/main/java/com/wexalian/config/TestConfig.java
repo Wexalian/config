@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Random;
+import java.util.Set;
 
 public class TestConfig {
     private static final Path PATH = Path.of(System.getProperty("user.dir")).resolve("test-config.json");
@@ -32,6 +33,7 @@ public class TestConfig {
         config.popCategory();
         config.pushCategory("test2");
         
+        var testList1 = config.createListProperty("level1#level2#list1", () -> Set.of("default1"), new TypeToken<>() {});
         var testString2 = config.createStringProperty("level1#level2#level3#string2", "");
         
         config.popCategory();
@@ -49,8 +51,10 @@ public class TestConfig {
         testInt5.set(RANDOM.nextInt(10));
         testInt6.set(RANDOM.nextInt(10));
         
-        testString2.set("test" + RANDOM.nextInt(10));
         testString1.set("test" + RANDOM.nextInt(10));
+    
+        System.out.println(testList1.get());
+        testString2.set("test" + RANDOM.nextInt(10));
         
         testDouble1.set(RANDOM.nextDouble() * 10);
         
