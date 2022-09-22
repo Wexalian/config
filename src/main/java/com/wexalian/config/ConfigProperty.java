@@ -13,6 +13,7 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
         this.defaultSupplier = defaultSupplier;
     }
     
+    @Nullable
     public T get() {
         if (value == null && defaultSupplier != null) {
             set(defaultSupplier.get());
@@ -20,15 +21,17 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
         return value;
     }
     
-    @SuppressWarnings("unchecked")
-    void setRaw(Object value) {
-        this.value = (T) value;
-    }
-    
-    public void set(T value) {
+    public void set(@Nullable T value) {
         if (!Objects.equals(this.value, value)) {
             this.value = value;
             this.dirty = true;
         }
+    }
+    
+    //internal
+    @SuppressWarnings("unchecked")
+    @Override
+    void setRaw(Object value) {
+        this.value = (T) value;
     }
 }
