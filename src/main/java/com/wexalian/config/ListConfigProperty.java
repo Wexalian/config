@@ -13,7 +13,8 @@ public class ListConfigProperty<T> extends BaseConfigProperty<List<T>> {
     private final Supplier<Collection<T>> defaultValuesSupplier;
     private List<T> values;
     
-    ListConfigProperty(@Nonnull NonnullSupplier<List<T>> defaultSupplier, @Nullable Supplier<Collection<T>> defaultValuesSupplier) {
+    //internal: see ConfigHandler
+    ListConfigProperty(@Nonnull NonnullSupplier<List<T>> defaultSupplier, @Nullable NonnullSupplier<Collection<T>> defaultValuesSupplier) {
         this.defaultSupplier = defaultSupplier;
         this.defaultValuesSupplier = defaultValuesSupplier;
     }

@@ -9,6 +9,7 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
     private final Supplier<T> defaultSupplier;
     private T value;
     
+    //internal: see ConfigHandler
     ConfigProperty(@Nullable Supplier<T> defaultSupplier) {
         this.defaultSupplier = defaultSupplier;
     }

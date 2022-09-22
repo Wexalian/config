@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.wexalian.nullability.annotations.Nonnull;
 import com.wexalian.nullability.annotations.Nullable;
+import com.wexalian.nullability.function.NonnullSupplier;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -98,7 +99,7 @@ public class ConfigHandler {
     }
     
     @Nonnull
-    public <T> ListConfigProperty<T> createListProperty(@Nonnull String name, @Nullable Supplier<Collection<T>> defaultValuesSupplier, @Nonnull TypeToken<List<T>> token) {
+    public <T> ListConfigProperty<T> createListProperty(@Nonnull String name, @Nullable NonnullSupplier<Collection<T>> defaultValuesSupplier, @Nonnull TypeToken<List<T>> token) {
         ListConfigProperty<T> property = new ListConfigProperty<>(ArrayList::new, defaultValuesSupplier);
         if (!pushedCategories.isEmpty()) {
             name = String.join("#", pushedCategories) + "#" + name;
