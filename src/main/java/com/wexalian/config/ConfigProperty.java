@@ -2,6 +2,7 @@ package com.wexalian.config;
 
 import com.wexalian.nullability.annotations.Nonnull;
 import com.wexalian.nullability.annotations.Nullable;
+import com.wexalian.nullability.function.NonnullSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,19 +15,19 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
     private T value;
     
     //internal: see ConfigHandler
-    ConfigProperty(@Nullable Supplier<T> defaultSupplier) {
+    ConfigProperty(@Nonnull NonnullSupplier<T> defaultSupplier) {
         this.defaultSupplier = defaultSupplier;
     }
     
-    @Nullable
+    @Nonnull
     public T get() {
-        if (value == null && defaultSupplier != null) {
+        if (value == null) {
             set(defaultSupplier.get());
         }
         return value;
     }
     
-    public void set(@Nullable T value) {
+    public void set(@Nonnull T value) {
         if (!Objects.equals(this.value, value)) {
             T old = this.value;
             this.value = value;
@@ -48,6 +49,6 @@ public class ConfigProperty<T> extends BaseConfigProperty<T> {
     
     @FunctionalInterface
     public interface Listener<T> {
-        void onChange(@Nullable T oldV, @Nullable T newV);
+        void onChange(@Nullable T oldV, @Nonnull T newV);
     }
 }
