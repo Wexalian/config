@@ -1,6 +1,7 @@
-package com.wexalian.config;
+package com.wexalian.config.test;
 
 import com.google.gson.reflect.TypeToken;
+import com.wexalian.config.ConfigHandler;
 
 import java.io.IOException;
 import java.nio.file.Path;
