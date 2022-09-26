@@ -1,13 +1,16 @@
 package com.wexalian.config;
 
+import com.wexalian.common.util.collection.wrapper.MapWrapper;
 import com.wexalian.nullability.annotations.Nonnull;
 import com.wexalian.nullability.annotations.Nullable;
 import com.wexalian.nullability.function.NonnullSupplier;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
-public class MapConfigProperty<K, V> extends BaseConfigProperty<Map<K, V>> implements Map<K, V> {
+public class MapConfigProperty<K, V> extends BaseConfigProperty<Map<K, V>> implements MapWrapper<K, V> {
     private final List<Listener<K, V>> listeners = new ArrayList<>(0);
     private final NonnullSupplier<Map<K, V>> defaultSupplier;
     private final Supplier<Map<K, V>> defaultValuesSupplier;
@@ -64,50 +67,6 @@ public class MapConfigProperty<K, V> extends BaseConfigProperty<Map<K, V>> imple
         this.getOrSetDefault().clear();
         this.listeners.forEach(l -> l.onChange(old, Map.of()));
         this.dirty = true;
-    }
-    
-    //Map
-    @Override
-    public int size() {
-        return this.getOrSetDefault().size();
-    }
-    
-    @Override
-    public boolean isEmpty() {
-        return this.getOrSetDefault().isEmpty();
-    }
-    
-    @Override
-    public boolean containsKey(@Nonnull Object key) {
-        return this.getOrSetDefault().containsKey(key);
-    }
-    
-    @Override
-    public boolean containsValue(@Nonnull Object value) {
-        return this.getOrSetDefault().containsValue(value);
-    }
-    
-    @Override
-    public V get(@Nonnull Object key) {
-        return this.getOrSetDefault().get(key);
-    }
-    
-    @Override
-    @Nonnull
-    public Set<K> keySet() {
-        return this.getOrSetDefault().keySet();
-    }
-    
-    @Override
-    @Nonnull
-    public Collection<V> values() {
-        return this.getOrSetDefault().values();
-    }
-    
-    @Override
-    @Nonnull
-    public Set<Entry<K, V>> entrySet() {
-        return this.getOrSetDefault().entrySet();
     }
     
     //internal
