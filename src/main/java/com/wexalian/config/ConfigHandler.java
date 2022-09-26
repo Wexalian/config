@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 public class ConfigHandler {
@@ -38,7 +37,7 @@ public class ConfigHandler {
     }
     
     @Nonnull
-    public <T> ConfigProperty<T> createProperty(@Nonnull String name, @Nullable Supplier<T> defaultSupplier, @Nonnull TypeToken<T> token) {
+    public <T> ConfigProperty<T> createProperty(@Nonnull String name, @Nullable NonnullSupplier<T> defaultSupplier, @Nonnull TypeToken<T> token) {
         ConfigProperty<T> property = new ConfigProperty<>(defaultSupplier);
         if (!pushedCategories.isEmpty()) {
             name = String.join("#", pushedCategories) + "#" + name;
@@ -101,6 +100,22 @@ public class ConfigHandler {
     @Nonnull
     public <T> ListConfigProperty<T> createListProperty(@Nonnull String name, @Nullable NonnullSupplier<Collection<T>> defaultValuesSupplier, @Nonnull TypeToken<List<T>> token) {
         ListConfigProperty<T> property = new ListConfigProperty<>(ArrayList::new, defaultValuesSupplier);
+        if (!pushedCategories.isEmpty()) {
+            name = String.join("#", pushedCategories) + "#" + name;
+        }
+        properties.put(name, property);
+        typeTokens.put(name, token);
+        return property;
+    }
+    
+    @Nonnull
+    public <K, V> MapConfigProperty<K, V> createMapProperty(@Nonnull String name, @Nonnull TypeToken<Map<K, V>> token) {
+        return createMapProperty(name, null, token);
+    }
+    
+    @Nonnull
+    public <K, V> MapConfigProperty<K, V> createMapProperty(@Nonnull String name, @Nullable NonnullSupplier<Map<K, V>> defaultValuesSupplier, @Nonnull TypeToken<Map<K, V>> token) {
+        MapConfigProperty<K, V> property = new MapConfigProperty<>(HashMap::new, defaultValuesSupplier);
         if (!pushedCategories.isEmpty()) {
             name = String.join("#", pushedCategories) + "#" + name;
         }
