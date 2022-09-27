@@ -6,3 +6,5 @@ out
 gradle.properties
 
 hs_err*.log
+
+test-config.json

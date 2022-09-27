@@ -5,6 +5,7 @@ import com.wexalian.config.ConfigHandler;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -36,10 +37,13 @@ public class TestConfig {
         
         var testList1 = config.createListProperty("level1#level2#list1", () -> Set.of("default1"), new TypeToken<>() {});
         var testString2 = config.createStringProperty("level1#level2#level3#string2", "");
+    
+        Map<String, Integer> testMap1 = config.createMapProperty("level1#map1", new TypeToken<>(){});
         
         config.popCategory();
-        
+    
         var testDouble1 = config.createDoubleProperty("double1", 0);
+        
         
         config.load(PATH);
         
@@ -53,12 +57,22 @@ public class TestConfig {
         testInt6.set(RANDOM.nextInt(10));
         
         testString1.set("test" + RANDOM.nextInt(10));
-    
-        System.out.println(testList1.get());
+        
         testString2.set("test" + RANDOM.nextInt(10));
         
-        testDouble1.set(RANDOM.nextDouble() * 10);
+        testList1.clear();
+        int count = RANDOM.nextInt(10) + 1;
+        for (int i = 0; i < count; i++) {
+            testList1.add("value" + RANDOM.nextInt(10));
+        }
         
+        testDouble1.set(RANDOM.nextDouble() * 10);
+    
+        testMap1.clear();
+        count = RANDOM.nextInt(10) + 1;
+        for (int i = 0; i < count; i++) {
+            testMap1.put("value" + RANDOM.nextInt(10), RANDOM.nextInt(10));
+        }
         config.save();
     }
 }
