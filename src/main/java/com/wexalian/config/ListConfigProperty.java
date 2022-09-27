@@ -28,20 +28,6 @@ public class ListConfigProperty<T> extends BaseConfigProperty<List<T>> implement
         return getOrSetDefault();
     }
     
-    @Nonnull
-    private List<T> getOrSetDefault() {
-        if (values == null) {
-            this.values = defaultSupplier.get();
-            if (defaultValuesSupplier != null) {
-                Collection<T> defaultValues = defaultValuesSupplier.get();
-                this.values.addAll(defaultValues);
-            }
-            listeners.forEach(l -> l.onChange(List.of(), values));
-            this.dirty = true;
-        }
-        return values;
-    }
-    
     public void set(@Nonnull List<T> value) {
         List<T> old = this.values;
         this.values = value;
@@ -135,6 +121,20 @@ public class ListConfigProperty<T> extends BaseConfigProperty<List<T>> implement
     }
     
     //internal
+    @Nonnull
+    private List<T> getOrSetDefault() {
+        if (values == null) {
+            this.values = defaultSupplier.get();
+            if (defaultValuesSupplier != null) {
+                Collection<T> defaultValues = defaultValuesSupplier.get();
+                this.values.addAll(defaultValues);
+            }
+            listeners.forEach(l -> l.onChange(List.of(), values));
+            this.dirty = true;
+        }
+        return values;
+    }
+    
     @Override
     @SuppressWarnings("unchecked")
     void setRaw(Object value) {

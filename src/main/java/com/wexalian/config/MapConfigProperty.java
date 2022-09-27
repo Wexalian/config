@@ -45,6 +45,13 @@ public class MapConfigProperty<K, V> extends BaseConfigProperty<Map<K, V>> imple
     }
     
     @Override
+    public void putAll(@Nonnull Map<? extends K, ? extends V> map) {
+        this.getOrSetDefault().putAll(map);
+        this.listeners.forEach(l -> l.onChange(Map.of(), Map.copyOf(map)));
+        this.dirty = true;
+    }
+    
+    @Override
     @Nullable
     @SuppressWarnings("unchecked")
     public V remove(@Nonnull Object key) {
@@ -52,13 +59,6 @@ public class MapConfigProperty<K, V> extends BaseConfigProperty<Map<K, V>> imple
         this.listeners.forEach(l -> l.onChange(Map.of((K)key,value), Map.of()));
         this.dirty = true;
         return value;
-    }
-    
-    @Override
-    public void putAll(@Nonnull Map<? extends K, ? extends V> map) {
-        this.getOrSetDefault().putAll(map);
-        this.listeners.forEach(l -> l.onChange(Map.of(), Map.copyOf(map)));
-        this.dirty = true;
     }
     
     @Override
