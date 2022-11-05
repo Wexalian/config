@@ -15,7 +15,7 @@ plugins {
 targetCompatibility = sourceCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 11
 
 group = 'com.wexalian.config'
-version = '0.0.15'
+version = '0.0.16'
 
 repositories {
     mavenCentral()
