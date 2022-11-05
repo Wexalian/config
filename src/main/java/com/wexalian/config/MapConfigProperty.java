@@ -1,6 +1,6 @@
 package com.wexalian.config;
 
-import com.wexalian.common.util.collection.wrapper.MapWrapper;
+import com.wexalian.common.collection.wrapper.MapWrapper;
 import com.wexalian.nullability.annotations.Nonnull;
 import com.wexalian.nullability.annotations.Nullable;
 import com.wexalian.nullability.function.NonnullSupplier;
