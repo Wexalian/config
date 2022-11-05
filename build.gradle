@@ -1,3 +1,5 @@
+import java.time.Duration
+
 buildscript {
     repositories {
         mavenCentral()
@@ -6,13 +8,11 @@ buildscript {
 
 plugins {
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
     id 'signing'
-    id 'org.javamodularity.moduleplugin' version '1.6.0'
-    id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0'
 }
-
-targetCompatibility = sourceCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = 11
 
 group = 'com.wexalian.config'
 version = '0.0.16'
@@ -36,43 +36,26 @@ test {
     useJUnitPlatform()
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'config'
+            from components.java
 
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: deployRepoUrl) {
-                authentication(userName: deployRepoUsername, password: deployRepoPassword)
-            }
-
-            snapshotRepository(url: deployRepoUrlSnapshot) {
-                authentication(userName: deployRepoUsername, password: deployRepoPassword)
-            }
-
-            pom.project {
+            pom {
                 name = 'config'
                 packaging = 'jar'
                 description = 'A basic config system based on GSON'
                 url = 'https://www.github.com/Wexalian/config'
-
                 licenses {
                     license {
                         name = 'The Unlicense'
@@ -84,8 +67,8 @@ uploadArchives {
                         id = 'Wexalian'
                         name = 'Lars Gerrits'
                         email = 'larsgerrits99@gmail.com'
-//                        organization = 'wexalian'
-//                        organizationUrl = 'http://www.wexalian.com'
+                        organization = 'wexalian'
+                        organizationUrl = 'https://www.wexalian.com'
                     }
                 }
                 scm {
@@ -98,6 +81,91 @@ uploadArchives {
     }
 }
 
-nexusStaging {
-    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            username = deployRepoUsername
+            password = deployRepoPassword
+        }
+    }
+    transitionCheckOptions {
+        maxRetries.set(40) //40 tries of 3 seconds = 2 minutes
+        delayBetween.set(Duration.ofMillis(3000))
+    }
 }
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+//test {
+//    useJUnitPlatform()
+//}
+//
+//task javadocJar(type: Jar) {
+//    classifier = 'javadoc'
+//    from javadoc
+//}
+//
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
+//
+//artifacts {
+//    archives javadocJar, sourcesJar
+//}
+//
+//signing {
+//    sign configurations.archives
+//}
+//
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//
+//            repository(url: deployRepoUrl) {
+//                authentication(userName: deployRepoUsername, password: deployRepoPassword)
+//            }
+//
+//            snapshotRepository(url: deployRepoUrlSnapshot) {
+//                authentication(userName: deployRepoUsername, password: deployRepoPassword)
+//            }
+//
+//            pom.project {
+//                name = 'config'
+//                packaging = 'jar'
+//                description = 'A basic config system based on GSON'
+//                url = 'https://www.github.com/Wexalian/config'
+//
+//                licenses {
+//                    license {
+//                        name = 'The Unlicense'
+//                        url = 'https://unlicense.org/'
+//                    }
+//                }
+//                developers {
+//                    developer {
+//                        id = 'Wexalian'
+//                        name = 'Lars Gerrits'
+//                        email = 'larsgerrits99@gmail.com'
+////                        organization = 'wexalian'
+////                        organizationUrl = 'http://www.wexalian.com'
+//                    }
+//                }
+//                scm {
+//                    connection = 'scm:git:git://github.com/Wexalian/config.git'
+//                    developerConnection = 'scm:git:ssh://github.com/Wexalian/config.git'
+//                    url = 'https://www.github.com/Wexalian/config'
+//                }
+//            }
+//        }
+//    }
+//}
+//
+//nexusStaging {
+//    serverUrl = "https://s01.oss.sonatype.org/service/local/"
+//}
